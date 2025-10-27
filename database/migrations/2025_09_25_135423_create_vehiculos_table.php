@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('placa')->unique();
             $table->string('tipo'); // carro, moto, etc.
+            
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });

@@ -1,30 +1,39 @@
 <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Profile Information') }}
+            {{ __('Actualiza la information de tu cuenta') }}
         </h2>
-
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
     </header>
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
 
+        <!-- Avatar -->
+        <div class="flex items-center gap-4">
+            <div class="w-20 h-20 rounded overflow-hidden bg-gray-100 dark:bg-gray-700">
+                <img src="{{ $user->avatar_url ?? asset('images/default-avatar.png') }}" alt="avatar" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1">
+                <x-input-label for="avatar" :value="__('Foto de perfil')" />
+                <input id="avatar" name="avatar" type="file" accept="image/*" class="mt-1 block w-full" />
+                <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">JPG, PNG, WEBP (max 2MB).</p>
+            </div>
+        </div>
+
         <div>
-            <x-input-label for="name" :value="__('Name')" />
+            <x-input-label for="name" :value="__('Nombre')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" :value="__('Correo')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 

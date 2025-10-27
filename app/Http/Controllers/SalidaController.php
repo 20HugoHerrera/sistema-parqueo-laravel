@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Salida;
 use App\Models\Entrada;
+    use App\Models\User;
+    use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -13,12 +15,15 @@ class SalidaController extends Controller
     /**
      * Mostrar listado de salidas registradas
      */
+
     public function index()
     {
         $salidas = Salida::with(['vehiculo', 'usuario'])->latest()->get();
-        return view('salidas.index', compact('salidas'));
-    }
+        $usuarios = User::all();        // <-- agregar
+        $vehiculos = Vehiculo::all();   // <-- agregar
 
+        return view('salidas.index', compact('salidas', 'usuarios', 'vehiculos'));
+    }
     /**
      * Registrar la salida de un vehículo
      */
@@ -57,4 +62,25 @@ class SalidaController extends Controller
 
         return redirect()->route('salidas.index')->with('success', 'Salida registrada correctamente. Duración: ' . $duracionMinutos . ' minutos');
     }
+
+public function filtrar(Request $request)
+{
+    $query = Salida::with(['vehiculo', 'usuario']);
+
+    if($request->usuario_id)
+        $query->where('usuario_id', $request->usuario_id);
+
+    if($request->vehiculo_id)
+        $query->where('vehiculo_id', $request->vehiculo_id);
+
+    if($request->fecha_inicio)
+        $query->whereDate('hora_salida', '>=', $request->fecha_inicio);
+
+    if($request->fecha_fin)
+        $query->whereDate('hora_salida', '<=', $request->fecha_fin);
+
+    return response()->json($query->latest()->get());
+}
+
+
 }

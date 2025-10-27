@@ -2,32 +2,56 @@
 
 namespace App\Models;
 
+use App\Models\Rol;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Rol;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Permission\Traits\HasRoles; // <-- importar el trait correcto
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasFactory, HasRoles; // <-- añadir HasRoles
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'email',
+        'password',
+        'avatar',
     ];
 
-    // Relación con roles (Muchos a Muchos)
+      public function getAvatarUrlAttribute()
+    {
+        if ($this->avatar) {
+            return asset('storage/avatars/' . $this->avatar);
+        }
+
+        return asset('images/default-avatar.png');
+    }
+
+
+    /**
+     * Relación muchos a muchos con roles.
+     */
     public function roles()
     {
-        // IMPORTANTE: tabla pivote 'usuario_roles', columnas correctas
+        // tabla pivote usuario_roles, columnas: user_id, rol_id
         return $this->belongsToMany(Rol::class, 'usuario_roles', 'user_id', 'rol_id');
     }
 
-    // Relación con vehículos (Un usuario puede tener varios)
+    /**
+     * Relación uno a muchos con vehículos.
+     */
     public function vehiculos()
     {
         return $this->hasMany(Vehiculo::class);
     }
 
-    // Verificar si el usuario tiene un rol específico
+    /**
+     * Verificar si el usuario tiene un rol específico.
+     *
+     * Nota: Spatie ya implementa hasRole(); si usas el trait esta función puede eliminarse
+     * para evitar conflictos y usar la implementación del paquete.
+     */
     public function hasRole($rol)
     {
         return $this->roles()->where('name', $rol)->exists();

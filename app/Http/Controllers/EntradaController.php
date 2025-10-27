@@ -95,4 +95,32 @@ class EntradaController extends Controller
 
         return redirect()->route('entradas.index')->with('success', 'Entrada finalizada correctamente.');
     }
+
+    public function filtrar(Request $request)
+{
+    $query = Entrada::with(['vehiculo', 'usuario', 'espacio']);
+
+    // Filtrar por usuario
+    if ($request->usuario_id) {
+        $query->where('usuario_id', $request->usuario_id);
+    }
+
+    // Filtrar por vehículo
+    if ($request->vehiculo_id) {
+        $query->where('vehiculo_id', $request->vehiculo_id);
+    }
+
+    // Filtrar por rango de fechas
+    if ($request->fecha_inicio && $request->fecha_fin) {
+        $query->whereBetween('hora_entrada', [
+            $request->fecha_inicio . ' 00:00:00',
+            $request->fecha_fin . ' 23:59:59'
+        ]);
+    }
+
+    $entradas = $query->latest()->get();
+
+    return response()->json($entradas);
+}
+
 }

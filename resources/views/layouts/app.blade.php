@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Sistema Parqueo ITCA-FEPADE') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -42,6 +42,7 @@
         .main-container {
             display: flex;
             min-height: 100vh;
+
         }
         .content-wrapper {
             flex-grow: 1;
@@ -53,6 +54,8 @@
             object-fit: cover;
             margin-right: 8px;
         }
+
+
     </style>
 </head>
 <body class="font-sans antialiased">
@@ -60,14 +63,15 @@
 <!-- Navbar superior -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm w-100 position-fixed" style="z-index: 1000;">
     <div class="container-fluid justify-content-between">
-        <span class="navbar-brand mb-0 h1">{{ config('app.name', 'Laravel') }}</span>
+        <span class="navbar-brand mb-0 h1">Sistema Parqueo ITCA-FEPADE</span>
 
         <!-- Usuario siempre visible -->
         <div class="dropdown">
             <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="{{ Auth::user()->avatar ?? 'https://via.placeholder.com/32' }}" alt="avatar" class="navbar-avatar">
-                <span>{{ Auth::user()->name ?? 'Usuario' }}</span>
+                <img src="{{ auth()->user()->avatar_url ?? asset('images/default-avatar.png') }}" alt="avatar" class="navbar-avatar">
+                <span>{{ auth()->user()->name ?? 'Usuario' }}</span>
             </a>
+
             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownUser">
                 <li>
                     <a class="dropdown-item" href="{{ route('profile.edit') }}">
@@ -92,61 +96,78 @@
     <nav class="bg-dark text-white flex-shrink-0 p-3" style="width: 250px;">
         <!-- Solo avatar/nombre (sin dropdown ni logout) -->
         <div class="sidebar-user mb-3">
-            <img src="{{ Auth::user()->avatar ?? 'https://via.placeholder.com/50' }}" alt="avatar" class="sidebar-avatar">
+             <img src="{{ auth()->user()->avatar_url ?? asset('images/default-avatar.png') }}" alt="avatar" class="sidebar-avatar">
             <div>
                 <div>{{ Auth::user()->name ?? 'Usuario' }}</div>
             </div>
         </div>
-        <hr>
+
 
         <!-- Rutas -->
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a href="{{ route('dashboard') }}" class="nav-link text-white {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-home me-2"></i> Dashboard
-                </a>
-            </li>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="{{ route('dashboard') }}" class="nav-link text-white {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <i class="fas fa-home me-2"></i> Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('vehiculos.index') }}" class="nav-link text-white {{ request()->routeIs('vehiculos.*') ? 'active' : '' }}">
+                <i class="fas fa-car me-2"></i> Vehículos
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('entradas.index') }}" class="nav-link text-white {{ request()->routeIs('entradas.*') ? 'active' : '' }}">
+                <i class="fas fa-arrow-circle-right me-2"></i> Entradas
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('salidas.index') }}" class="nav-link text-white {{ request()->routeIs('salidas.*') ? 'active' : '' }}">
+                <i class="fas fa-arrow-circle-left me-2"></i> Salidas
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('espacios.index') }}" class="nav-link text-white {{ request()->routeIs('espacios.*') ? 'active' : '' }}">
+                <i class="fas fa-parking me-2"></i> Espacios
+            </a>
+        </li>
+
+
             <li>
-                <a href="{{ route('vehiculos.index') }}" class="nav-link text-white {{ request()->routeIs('vehiculos.*') ? 'active' : '' }}">
-                    <i class="fas fa-car me-2"></i> Vehículos
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('entradas.index') }}" class="nav-link text-white {{ request()->routeIs('entradas.*') ? 'active' : '' }}">
-                    <i class="fas fa-sign-in-alt me-2"></i> Entradas
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('salidas.index') }}" class="nav-link text-white {{ request()->routeIs('salidas.*') ? 'active' : '' }}">
-                    <i class="fas fa-sign-out-alt me-2"></i> Salidas
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('espacios.index') }}" class="nav-link text-white {{ request()->routeIs('espacios.*') ? 'active' : '' }}">
-                    <i class="fas fa-parking me-2"></i> Espacios
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-link text-white">
+                <a href="{{ route('usuarios.index') }}" class="nav-link text-white {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
                     <i class="fas fa-users me-2"></i> Usuarios
                 </a>
             </li>
-        </ul>
+   
+
+        <li>
+            <a href="{{ route('reportes.index') }}" class="nav-link text-white {{ request()->routeIs('reportes.*') ? 'active' : '' }}">
+                <i class="fas fa-file-alt me-2"></i> Reportes
+            </a>
+        </li>
+    </ul>
+
     </nav>
 
     <!-- Contenido principal -->
     <div class="content-wrapper bg-light">
         @isset($header)
-            <header class="bg-white shadow-sm p-3 mb-4">
+
                 <div class="container">
-                    {{ $header }}
+                    {{ $header }} 
                 </div>
-            </header>
+            
         @endisset
 
-        <main class="p-4">
-            @yield('content')
-        </main>
+<!-- Añadir espacio equivalente a la altura del navbar -->
+<div style="height:0px;"></div>
+
+<main class="mb-5">
+    @if (isset($slot))
+        {{ $slot }}
+    @else
+        @yield('content')
+    @endif
+</main>
     </div>
 </div>
 

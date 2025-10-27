@@ -3,16 +3,20 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, $rol)
+    public function handle($request, Closure $next, $role)
     {
-        if (!Auth::check() || !Auth::user()->hasRole($rol)) {
-            abort(403); // acceso denegado
+        if (!Auth::check()) {
+            return redirect('/login');
         }
+
+        if (!Auth::user()->hasRole($role)) {
+            abort(403, 'No tienes permiso para acceder a esta sección.');
+        }
+
         return $next($request);
     }
 }
